@@ -5,6 +5,10 @@
 
 작업 디렉터리: `C:\Users\GreatMT\workspace\develope\mail_work`
 
+**스크립트에 JSON을 넘길 때는 파이프(`echo ... |`)를 쓰지 말 것.** 무인 실행 권한 목록과 맞지 않아
+거부될 수 있고, 메일 본문의 따옴표/길이 때문에 깨지기 쉽다. 항상 Write 도구로 `state/work/<이름>.json`에
+저장한 뒤 `python scripts/<스크립트>.py --input state/work/<이름>.json`으로 실행한다.
+
 ## 1. 상태 로드
 - `state/last_check.json`을 읽어 `gmail_last_checked`, `kakao_mail_last_checked` 확인
 - 둘 다 null이면 최근 1일만 조회 대상으로 삼음
@@ -24,7 +28,8 @@
 - `.env`에 `KAKAO_MAIL_APP_PASSWORD`가 비어있어 실패하면 SKIP하고 다음 단계로 진행
 
 ## 4. 규칙 기반 1차 필터
-- 2+3에서 만든 합친 리스트(JSON)를 `python scripts/classify_mail.py`에 표준입력으로 전달
+- 2+3에서 만든 합친 리스트(JSON)를 `state/work/combined.json`에 저장 후
+  `python scripts/classify_mail.py --input state/work/combined.json` 실행
 - 통과한 메일만 다음 단계로
 
 ## 5. 최종 중요도 판정 + 요약 (LLM 판단)
@@ -43,19 +48,19 @@
 - 대상: 2+3단계에서 수집한 메일 **전체**(4단계 필터 통과 여부와 무관). 0건이면 발송하지 않음
 - 순서: `important`(제목 앞에 `⭐`) → `hold` → 나머지(ignore 및 필터 미통과)
 - 제목에는 메일 제목(subject)만 넣음(출처 태그는 글자 수 때문에 생략)
-- JSON을 표준입력으로 전달:
+- 아래 JSON을 `state/work/kakao.json`에 저장:
   ```json
   {
     "header_prefix": "📋 신규메일 <전체건수>건 · 중요 <important건수>건 (MM/DD HH:mm)",
     "titles": ["⭐중요메일제목", "참고메일제목", "기타메일제목"]
   }
   ```
-  실행: `echo '<위 JSON>' | python scripts/send_kakao_talk.py`
+  실행: `python scripts/send_kakao_talk.py --input state/work/kakao.json`
 - 토큰 미설정/만료로 SKIP 또는 ERROR가 나오면 정상 — 다음 단계로 진행
 
 ## 7. 대시보드 로그 기록
-- `importance`가 `important` 또는 `hold`인 메일 전체를 JSON으로 만들어
-  `python scripts/log_mail_note.py`에 표준입력으로 전달
+- `importance`가 `important` 또는 `hold`인 메일 전체를 JSON으로 `state/work/log.json`에 저장 후
+  `python scripts/log_mail_note.py --input state/work/log.json` 실행
 - Obsidian `Areas/Mail_Log/`에 frontmatter 노트 생성됨
 
 ## 8. LLM_wiki 장기 보관

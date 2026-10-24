@@ -177,6 +177,12 @@ def send_list(access_token, header_title, items, header_link=""):
     )
 
 
+def read_input():
+    if "--input" in sys.argv:
+        return Path(sys.argv[sys.argv.index("--input") + 1]).read_text(encoding="utf-8-sig")
+    return sys.stdin.read()
+
+
 def main():
     env = load_env()
     rest_api_key = env.get("KAKAO_REST_API_KEY")
@@ -189,7 +195,7 @@ def main():
               "scripts/kakao_oauth_bootstrap.py를 먼저 실행하세요.", file=sys.stderr)
         sys.exit(0)
 
-    raw = sys.stdin.read().strip()
+    raw = read_input().strip()
     if not raw:
         print("SKIP: 발송할 내용이 없습니다.", file=sys.stderr)
         sys.exit(0)
@@ -231,7 +237,7 @@ def main():
         print("SKIP: 발송할 항목이 없습니다.", file=sys.stderr)
         sys.exit(0)
     else:
-        link_url = sys.argv[1] if len(sys.argv) > 1 else ""
+        link_url = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("--") else ""
 
         def do_send(token):
             return send_memo(token, raw, link_url)

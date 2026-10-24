@@ -94,6 +94,12 @@ def write_note(mail, vault_path):
     return note_path, True
 
 
+def read_input():
+    if "--input" in sys.argv:
+        return Path(sys.argv[sys.argv.index("--input") + 1]).read_text(encoding="utf-8-sig")
+    return sys.stdin.read()
+
+
 def main():
     env = load_env()
     vault_path = env.get("OBSIDIAN_VAULT_PATH")
@@ -101,7 +107,7 @@ def main():
         print("ERROR: .env에 OBSIDIAN_VAULT_PATH를 설정하세요.", file=sys.stderr)
         sys.exit(1)
 
-    raw = sys.stdin.read()
+    raw = read_input()
     mails = json.loads(raw) if raw.strip() else []
 
     written = []

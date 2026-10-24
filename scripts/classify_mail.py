@@ -38,8 +38,14 @@ def matches(mail, rules):
     return False, None
 
 
+def read_input():
+    if "--input" in sys.argv:
+        return Path(sys.argv[sys.argv.index("--input") + 1]).read_text(encoding="utf-8-sig")
+    return sys.stdin.read()
+
+
 def main():
-    raw = sys.stdin.read()
+    raw = read_input()
     mails = json.loads(raw) if raw.strip() else []
     rules = load_rules()
 
