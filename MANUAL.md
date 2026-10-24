@@ -32,10 +32,12 @@ claude -p "prompts\daily_mail_pipeline.md 지시 내용"
 ## 2. 평소에 확인할 것
 
 ### 카카오톡
-중요하다고 판단된 메일은 **카카오톡 "나에게 보내기"** 채팅방으로 알림이 옵니다. 하루 최대 2번(07:00, 15:00 실행 시점) 옵니다. 카카오 기본 템플릿이 **최대 200자**라서 형식이 두 가지로 나뉩니다.
+신규 메일이 있으면 **카카오톡 "나에게 보내기"** 채팅방으로 전체 제목 목록이 옵니다. 하루 최대 2번(07:00, 15:00 실행 시점) 옵니다.
 
-- **중요 메일 1건**: 출처/발신자/제목/수신시각 + 탭하면 그 메일로 바로 이동하는 링크 포함
-- **중요 메일 2건 이상**: 건별 한 줄 요약만 나열 (글자 수 제약으로 링크는 생략, 자세한 내용은 대시보드에서 확인)
+- 헤더: `📋 신규메일 N건 · 중요 M건 (MM/DD HH:mm)`
+- 본문: 번호 매긴 제목 목록 (중요 → 참고 → 기타 순, 중요 메일은 앞에 ⭐)
+- 카카오 텍스트 메시지는 200자 제한이 있어 건수가 많으면 여러 메시지로 나뉘어 오고 헤더에 `(1/3)`처럼 표시됩니다 (20건 기준 약 3개)
+- 제목은 20자에서 잘리며, 요약·원문은 대시보드에서 확인합니다
 
 ### Obsidian 대시보드
 볼트(`C:\Users\GreatMT\workspace\LLM_Wiki`)에서 **`Mail_Dashboard.base`** 파일을 엽니다.
@@ -159,8 +161,14 @@ python scripts\collect_kakao_mail.py
 # 규칙 필터만 테스트 (표준입력으로 JSON 전달)
 Get-Content kakao_test.json | python scripts\classify_mail.py
 
-# 카카오톡 발송만 테스트
+# 카카오톡 발송만 테스트 (단순 텍스트)
 "테스트 메시지" | python scripts\send_kakao_talk.py
+
+# 카카오톡 발송 테스트 (제목 목록 - 실제 운영과 동일한 형식)
+'{"header_prefix": "📋 테스트", "titles": ["⭐제목1", "제목2"]}' | python scripts\send_kakao_talk.py
+
+# 제목 페이지 분할 단위 테스트
+python -m unittest tests.test_send_kakao_talk
 ```
 
 ---
