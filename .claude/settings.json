@@ -5,6 +5,7 @@
       "Bash(python scripts/classify_mail.py)",
       "Bash(python scripts/log_mail_note.py)",
       "Bash(python scripts/send_kakao_talk.py)",
+      "Bash(python scripts/send_kakao_talk.py *)",
       "Read(state/last_check.json)",
       "Edit(state/last_check.json)",
       "Read(logs/*.log)",

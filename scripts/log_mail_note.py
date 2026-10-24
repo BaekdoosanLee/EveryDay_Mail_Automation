@@ -38,18 +38,31 @@ def yaml_escape(value):
     return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
 
+def make_preview(text, max_len=80):
+    if not text:
+        return ""
+    collapsed = re.sub(r"\s+", " ", text).strip()
+    if len(collapsed) <= max_len:
+        return collapsed
+    return collapsed[:max_len].rstrip() + "..."
+
+
 def write_note(mail, vault_path):
     log_dir = Path(vault_path) / "Areas" / "Mail_Log"
     log_dir.mkdir(parents=True, exist_ok=True)
 
     date_str = (mail.get("date") or datetime.now().isoformat())[:10]
     slug = slugify(mail.get("subject") or "untitled")
-    short_hash = hashlib.sha1((mail.get("id") or mail.get("subject") or "").encode("utf-8")).hexdigest()[:6]
+    hash_key = mail.get("source", "") + "|" + (mail.get("id") or mail.get("subject") or "")
+    short_hash = hashlib.sha1(hash_key.encode("utf-8")).hexdigest()[:6]
     filename = f"{date_str}_{slug}_{short_hash}.md"
     note_path = log_dir / filename
 
     if note_path.exists():
         return note_path, False
+
+    summary = mail.get("summary") or ""
+    body = mail.get("body") or mail.get("snippet") or ""
 
     frontmatter = {
         "type": "mail-log",
@@ -60,6 +73,7 @@ def write_note(mail, vault_path):
         "importance": mail.get("importance", "hold"),
         "status": "unread",
         "link": mail.get("link", ""),
+        "preview": make_preview(summary or body),
     }
 
     lines = ["---"]
@@ -69,7 +83,12 @@ def write_note(mail, vault_path):
     lines.append("")
     lines.append(f"# {mail.get('subject', '(제목 없음)')}")
     lines.append("")
-    lines.append((mail.get("summary") or mail.get("snippet") or mail.get("body") or "")[:1000])
+    if summary:
+        lines.append("## 요약")
+        lines.append(summary)
+        lines.append("")
+    lines.append("## 원문")
+    lines.append(body[:3000] if body else "(원문 없음)")
 
     note_path.write_text("\n".join(lines), encoding="utf-8")
     return note_path, True

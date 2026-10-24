@@ -4,6 +4,10 @@
 전체 파이프라인이 끊기지 않도록 하기 위함.
 
 표준 입력으로 다이제스트 텍스트(plain text)를 받는다.
+선택 인자로 바로가기 URL 하나를 넘기면 메시지에 링크가 붙는다
+(예: python send_kakao_talk.py "https://mail.google.com/...").
+
+카카오 기본 텍스트 템플릿은 최대 200자 제한이 있다 - 넘으면 자른다.
 """
 import json
 import sys
@@ -72,12 +76,21 @@ def refresh_access_token(rest_api_key, refresh_token):
     return data["access_token"]
 
 
-def send_memo(access_token, text):
+MAX_TEXT_LEN = 200
+
+
+def truncate_text(text, max_len=MAX_TEXT_LEN):
+    if len(text) <= max_len:
+        return text
+    return text[: max_len - 3].rstrip() + "..."
+
+
+def send_memo(access_token, text, link_url=""):
     template_object = json.dumps(
         {
             "object_type": "text",
-            "text": text[:200],
-            "link": {"web_url": "", "mobile_web_url": ""},
+            "text": truncate_text(text),
+            "link": {"web_url": link_url, "mobile_web_url": link_url},
         },
         ensure_ascii=False,
     )
@@ -107,13 +120,15 @@ def main():
         print("SKIP: 발송할 내용이 없습니다.", file=sys.stderr)
         sys.exit(0)
 
+    link_url = sys.argv[1] if len(sys.argv) > 1 else ""
+
     try:
-        result = send_memo(access_token, text)
+        result = send_memo(access_token, text, link_url)
     except urllib.error.HTTPError as e:
         if e.code == 401:
             access_token = refresh_access_token(rest_api_key, refresh_token)
             try:
-                result = send_memo(access_token, text)
+                result = send_memo(access_token, text, link_url)
             except urllib.error.HTTPError as e2:
                 body = e2.read().decode("utf-8", errors="replace")
                 print(f"ERROR: 발송 실패 (HTTP {e2.code})\n{body}", file=sys.stderr)
