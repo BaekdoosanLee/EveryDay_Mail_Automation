@@ -42,7 +42,7 @@
 ## 7. 대시보드 로그 기록
 - `importance`가 `important` 또는 `hold`인 메일 전체를 JSON으로 만들어
   `python scripts/log_mail_note.py`에 표준입력으로 전달
-- Obsidian `0_Inbox/Mail_Log/`에 frontmatter 노트 생성됨
+- Obsidian `Areas/Mail_Log/`에 frontmatter 노트 생성됨
 
 ## 8. LLM_wiki 장기 보관
 - `importance: important`이면서 재참조 가치가 있다고 판단되는 메일(계약/의사결정/지속 프로젝트 관련)만

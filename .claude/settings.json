@@ -9,7 +9,7 @@
       "Edit(state/last_check.json)",
       "Read(logs/*.log)",
       "Edit(logs/*.log)",
-      "Edit(C:/Users/GreatMT/workspace/LLM_Wiki/0_Inbox/Mail_Log/**)",
+      "Edit(C:/Users/GreatMT/workspace/LLM_Wiki/Areas/Mail_Log/**)",
       "mcp__claude_ai_Gmail__search_threads",
       "mcp__claude_ai_Gmail__get_thread",
       "mcp__claude_ai_Gmail__get_message",

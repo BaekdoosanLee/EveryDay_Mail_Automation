@@ -43,7 +43,7 @@ claude -p "prompts\daily_mail_pipeline.md 지시 내용"
 | 중요 메일 | `importance: important`로 분류된 것만 |
 | 미확인 | `status: unread`인 것만 |
 
-메일을 확인했으면 해당 노트(`0_Inbox\Mail_Log\*.md`)를 열어 frontmatter의 `status`를 `"unread"` → `"read"`로 직접 바꿔주세요. **자동으로 바뀌지 않는 수동 관리 포인트**입니다.
+메일을 확인했으면 대시보드에서 `status` 칸을 직접 클릭해 `"unread"` → `"read"`로 바꾸거나, 해당 노트(`Areas\Mail_Log\*.md`)를 열어 frontmatter를 직접 수정하면 됩니다. **자동으로 바뀌지 않는 수동 관리 포인트**입니다.
 
 ### LLM_wiki 영구 노트
 계약/의사결정처럼 두고두고 참고할 가치가 있다고 판단된 메일만 별도로 LLM_wiki 본문 위치에 지식 노트로 생성됩니다. 단순 알림성 메일은 여기엔 안 쌓이고 `Mail_Log`에만 남습니다.
@@ -180,4 +180,4 @@ mail_work\
     └── run_pipeline.ps1           # 전체 실행 + 절전 복귀 로직
 ```
 
-관련 Obsidian 파일: `LLM_Wiki\Mail_Dashboard.base`, `LLM_Wiki\0_Inbox\Mail_Log\*.md`
+관련 Obsidian 파일: `LLM_Wiki\Mail_Dashboard.base`, `LLM_Wiki\Areas\Mail_Log\*.md`

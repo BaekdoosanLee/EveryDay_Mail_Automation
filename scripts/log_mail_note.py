@@ -35,11 +35,11 @@ def slugify(text, max_len=40):
 
 
 def yaml_escape(value):
-    return str(value).replace('"', '\\"')
+    return str(value).replace("\\", "\\\\").replace('"', '\\"')
 
 
 def write_note(mail, vault_path):
-    log_dir = Path(vault_path) / "0_Inbox" / "Mail_Log"
+    log_dir = Path(vault_path) / "Areas" / "Mail_Log"
     log_dir.mkdir(parents=True, exist_ok=True)
 
     date_str = (mail.get("date") or datetime.now().isoformat())[:10]
@@ -69,7 +69,7 @@ def write_note(mail, vault_path):
     lines.append("")
     lines.append(f"# {mail.get('subject', '(제목 없음)')}")
     lines.append("")
-    lines.append(mail.get("summary") or mail.get("snippet") or mail.get("body", "")[:1000])
+    lines.append((mail.get("summary") or mail.get("snippet") or mail.get("body") or "")[:1000])
 
     note_path.write_text("\n".join(lines), encoding="utf-8")
     return note_path, True
