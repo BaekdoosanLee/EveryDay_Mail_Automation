@@ -1,0 +1,17 @@
+# 중요 메일 판별 규칙 - 운영하면서 계속 다듬을 것
+
+vip_senders:
+  - "bdslee72@gmail.com"
+  - "sanduslee@kakao.com"
+
+keywords:
+  - "긴급"
+  - "마감"
+  - "계약"
+  - "결제"
+  - "송금"
+  - "승인"
+
+gmail_exclude_labels:
+  - "CATEGORY_PROMOTIONS"
+  - "CATEGORY_SOCIAL"
